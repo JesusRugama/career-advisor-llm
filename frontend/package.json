@@ -1,0 +1,39 @@
+{
+  "name": "career-advisor-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "generate:api:users": "npx @hey-api/openapi-ts -i http://localhost:8001/openapi.json -o ./src/lib/api/users -c @hey-api/client-next",
+    "generate:api:conversations": "npx @hey-api/openapi-ts -i http://localhost:8002/openapi.json -o ./src/lib/api/conversations -c @hey-api/client-next",
+    "generate:api:prompts": "npx @hey-api/openapi-ts -i http://localhost:8004/openapi.json -o ./src/lib/api/prompts -c @hey-api/client-next",
+    "generate:api": "npm-run-all generate:api:*"
+  },
+  "dependencies": {
+    "next": "15.5.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@hey-api/openapi-ts": "^0.82.5",
+    "@swc/helpers": "^0.5.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

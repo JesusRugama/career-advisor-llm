@@ -1,0 +1,19 @@
+# Generated API files
+src/lib/api/
+
+# Build outputs
+.next/
+out/
+dist/
+
+# Dependencies
+node_modules/
+
+# Lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Other files that shouldn't be formatted
+*.min.js
+*.min.css
