@@ -1,34 +1,57 @@
 import sys
 import os
-
-# Add shared directory to path
-sys.path.append(os.path.join(os.path.dirname(__file__), "shared"))
+import importlib
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
+base_dir = os.path.dirname(__file__)
+sys.path.insert(0, os.path.join(base_dir, "shared"))
+
 from database import close_engine
 
-# Import users service router
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "services/users-service/src"))
-from router import router as users_router
-sys.path.pop(0)
+# Module names that conflict between services
+CONFLICTING_MODULES = {
+    "router", "schemas", "models", "repository", "service",
+    "dependencies", "repositories", "routers",
+}
 
-# Import conversations service routers
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "services/conversations-service/src"))
-from routers import conversations_router, messages_router
-sys.path.pop(0)
 
-# Import prompts service router
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "services/prompts-service/src"))
-from router import router as prompts_router
-sys.path.pop(0)
+def load_service_module(service_name: str, module_name: str):
+    """
+    Load a module from a service directory, cleaning up conflicting
+    module names between services so each import is isolated.
+    """
+    service_path = os.path.join(base_dir, f"services/{service_name}/src")
 
-# Import llm service router
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "services/llm-service/src"))
-from router import router as llm_router
-sys.path.pop(0)
+    # Remove any previously cached conflicting modules
+    for mod_name in list(sys.modules.keys()):
+        if mod_name.split(".")[0] in CONFLICTING_MODULES:
+            del sys.modules[mod_name]
+
+    # Add service path to front of sys.path
+    sys.path.insert(0, service_path)
+
+    # Import the module
+    module = importlib.import_module(module_name)
+
+    # Remove service path
+    sys.path.remove(service_path)
+
+    return module
+
+
+# Load routers from each service (order matters - cleanup happens between each)
+users_mod = load_service_module("users-service", "router")
+users_router = users_mod.router
+
+convos_mod = load_service_module("conversations-service", "routers")
+conversations_router = convos_mod.conversations_router
+messages_router = convos_mod.messages_router
+
+prompts_mod = load_service_module("prompts-service", "router")
+prompts_router = prompts_mod.router
 
 
 @asynccontextmanager
@@ -63,7 +86,6 @@ app.include_router(users_router, prefix="/api", tags=["users"])
 app.include_router(conversations_router, prefix="/api", tags=["conversations"])
 app.include_router(messages_router, prefix="/api", tags=["messages"])
 app.include_router(prompts_router, prefix="/api", tags=["prompts"])
-app.include_router(llm_router, prefix="/api", tags=["llm"])
 
 
 @app.get("/")
@@ -76,7 +98,6 @@ async def root():
             "conversations": "/api/users/{user_id}/conversations",
             "messages": "/api/messages",
             "prompts": "/api/prompts",
-            "llm": "/api/ai",
         },
         "docs": "/docs",
         "health": "/health",
@@ -88,5 +109,5 @@ async def health_check():
     return {
         "status": "healthy",
         "mode": "local-development",
-        "services": ["users", "conversations", "messages", "prompts", "llm"],
+        "services": ["users", "conversations", "messages", "prompts"],
     }
