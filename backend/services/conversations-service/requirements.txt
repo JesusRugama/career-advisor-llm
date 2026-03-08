@@ -1,43 +1,26 @@
-# Core FastAPI dependencies
+# Web Framework
 fastapi==0.116.1
-fastapi-cli==0.0.8
 uvicorn==0.35.0
-starlette==0.47.2
 
-# Database dependencies
-asyncpg==0.29.0
+# Database
 SQLAlchemy==2.0.25
+asyncpg==0.29.0
 alembic==1.13.1
-psycopg2-binary==2.9.9
 
-# Pydantic for data validation
+# Data Validation
 pydantic==2.11.7
 pydantic-settings==2.10.1
-pydantic_core==2.33.2
 
-# HTTP client for testing
+# HTTP Client (for feign clients)
 httpx==0.28.1
-httpcore==1.0.9
 
-# Testing dependencies
-pytest==8.4.1
-pytest-asyncio==1.1.0
-aiosqlite==0.21.0
+# AI Service
+openai==1.98.0
 
 # Configuration
 python-dotenv==1.1.1
 
-# Core Python dependencies
-typing_extensions==4.14.1
-annotated-types==0.7.0
-anyio==4.9.0
-sniffio==1.3.1
-idna==3.10
-certifi==2025.7.14
-
-# Development tools (auto-reload, etc.)
-watchfiles==1.1.0
-python-multipart==0.0.20
-
-# AI
-openai==1.98.0
+# Testing
+pytest==8.4.1
+pytest-asyncio==1.1.0
+aiosqlite==0.21.0
